@@ -64,8 +64,4 @@ pb:value("112:125:0982", translate("125M"))
 pb:value("140:200:0782", translate("100M"))
 pb:value("186:75:0b83", translate("75M"))
 
-  
-pb = conf:taboption("advanced", Value, "voltage", translate("voltage"),"Modify voltage and Save &#38; Apply, then Power off and Restart")
-conf:option(Value,"voltage", "voltage")
-
 return m
