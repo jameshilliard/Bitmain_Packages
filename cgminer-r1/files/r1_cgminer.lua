@@ -73,7 +73,7 @@ pb:value("31:125:0983", translate("125M"))
 pb:value("35:118.75:0903", translate("119M"))
 pb:value("35:112.5:0883", translate("112M"))
 pb:value("37:106.25:0803", translate("106M"))
-pb:value("38:100:4f83", translate("100M (default)"))
+pb:value("38:100:0783", translate("100M (default)"))
 
   
 pb = conf:taboption("advanced", Value, "voltage", translate("voltage"),"Modify voltage, click Save &#38; Apply, and then re-power the router.")
