@@ -32,12 +32,12 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./files/pic-update.init $(1)/etc/init.d/pic-update
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) ./files/pic-update.config $(1)/etc/config/pic-update
-	ifeq ($(CONFIG_TARGET_ar71xx_generic_ANTMINERS1),y)
-		$(INSTALL_CONF) ./files/miner_pic_s1.hex $(1)/etc/config/miner_pic.hex
-	endif
-	ifeq ($(CONFIG_TARGET_ar71xx_generic_ANTMINERS3),y)
-		$(INSTALL_CONF) ./files/miner_pic.hex $(1)/etc/config/miner_pic.hex
-	endif
+ifeq ($(CONFIG_TARGET_ar71xx_generic_ANTMINERS1),y)
+	$(INSTALL_CONF) ./files/miner_pic_s1.hex $(1)/etc/config/miner_pic.hex
+endif
+ifeq ($(CONFIG_TARGET_ar71xx_generic_ANTMINERS3),y)
+	$(INSTALL_CONF) ./files/miner_pic.hex $(1)/etc/config/miner_pic.hex
+endif
 endef
 
 # This line executes the necessary commands to compile our program.
