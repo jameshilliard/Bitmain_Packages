@@ -59,13 +59,10 @@ define Package/cgminer-s1/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/cgminer-api			$(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/cgminer	$(1)/usr/bin
 	$(INSTALL_BIN) $(FILES_DIR)/cgminer-monitor			$(1)/usr/bin
-	$(INSTALL_BIN) $(FILES_DIR)/pic-update				$(1)/usr/bin
-	$(INSTALL_BIN) $(FILES_DIR)/pic-update.init			$(1)/etc/init.d/pic-update
 
 	mkdir -p $(1)/usr/lib/lua/luci/model/cbi/cgminer
 	mkdir -p $(1)/usr/lib/lua/luci/controller
 	mkdir -p $(1)/etc/uci-defaults
-	$(CP)	$(FILES_DIR)/pic-update.config			$(1)/etc/config/pic-update
 	$(CP)	$(FILES_DIR)/control.cgminer.lua		$(1)/usr/lib/lua/luci/controller/cgminer.lua
 	$(CP)	$(FILES_DIR)/01-cgminer					$(1)/etc/uci-defaults/01-cgminer
 
@@ -74,7 +71,6 @@ define Package/cgminer-s1/install
 	$(CP)	$(FILES_DIR)/s1_cgminer.config			$(1)/etc/config/cgminer
 	$(CP)	$(FILES_DIR)/s1_cgminer.lua				$(1)/usr/lib/lua/luci/model/cbi/cgminer/cgminer.lua
 	$(CP)	$(FILES_DIR)/s1_cgminerstatus.lua		$(1)/usr/lib/lua/luci/model/cbi/cgminer/cgminerstatus.lua
-	$(CP)	$(FILES_DIR)/s1_miner_pic.hex			$(1)/etc/config/miner_pic.hex
 
 	rm -rf $(1)/usr/bin/compile_time
 	date >> $(1)/usr/bin/compile_time
