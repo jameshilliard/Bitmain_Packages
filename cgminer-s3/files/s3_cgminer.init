@@ -10,26 +10,22 @@ start() {
 	local _pool1url
 	local _pool1user
 	local _pool1pw
-
 	local _pool2url
 	local _pool2user
 	local _pool2pw
-
 	local _pool3url
 	local _pool3user
 	local _pool3pw
-	
-	local _cf
-	local _mc
-	local _aa
 
 	local _pb
+	local _ow
+	local _bec
+
+	local _aa
 	local _mo
-
-	local _regv
-	local _to
-
-	local _vl
+	
+	local _freq
+	local _volt
 
 	config_load cgminer
 
@@ -43,23 +39,19 @@ start() {
 	config_get _pool3user default pool3user
 	config_get _pool3pw default pool3pw
 
-	config_get _freq default freq
-	config_get _vl default voltage
-	config_get _mc default miner_count
+	config_get _pb default pool_balance
+	config_get _ow default bitmain_tempoverctrl
+	config_get _bec default bitmain_beeper
 
 	config_get _aa default api_allow
-
-	config_get _pb default pool_balance
-	config_get _target default target
 	config_get _mo default more_options
-	config_get _ow default bitmain_notempoverctrl
-	config_get _bec default bitmain_nobeeper
 
-	config_load asic-freq
-	config_get _regv default freq_value
-	config_get _cf	default chip_freq
-	config_get _to	default timeout
-	config_get _vl	default voltage
+	config_get _freq default freq
+	config_get _volt default voltage
+
+	if [ "$_volt" != "" ]; then
+		VOPT="--bitmain-voltage $_volt"
+	fi
 
 	if [ "$_pool1url" != "" -a "$_pool1user" != "" -a "$_pool1pw" != "" ]; then
 	    POOL1="-o $_pool1url -O $_pool1user:$_pool1pw"
@@ -70,35 +62,27 @@ start() {
 	if [ "$_pool3url" != "" -a "$_pool3user" != "" -a "$_pool3pw" != "" ]; then
 	    POOL3="-o $_pool3url -O $_pool3user:$_pool3pw"
 	fi
-	if [ "$_vl" = "" ]; then
-		_vl="0000"
-	fi
-	AOPTIONS="--lowmem --bitmain-options 115200:32:8:$_to:$_cf:$_regv"
 
-	PARAMS="$AOPTIONS $POOL1 $POOL2 $POOL3 $_pb $_ow $_bec --api-listen --api-network --bitmain-checkn2diff --bitmain-hwerror --bitmain-voltage $_vl --queue 4096"
+	BITOPT="--bitmain-options 115200:32:8 --bitmain-freq $_freq"
+	POOLOPT="$POOL1 $POOL2 $POOL3 $_pb"
+	APIOPT="--api-listen --api-allow $_aa"
+	OTHEROPT="--bitmain-checkn2diff --bitmain-hwerror $_ow $_bec"
 
-	$APP --lowmem --bitmain-options 115200:32:8:$_to:$_cf:$_regv --bitmain-voltage $_vl -q >/dev/null 2>&1
+	PARAMS="$BITOPT $VOPT $POOLOPT $APIOPT $OTHEROPT $_mo"
+
 	sleep 1
-
-	touch /tmp/cgminer-ntpd-done
 	cnt=0
-	if [ ! -f /tmp/cgminer-ntpd-done ]; then
-		while [ "$NTPD_RET" != "0" ]; do
-			ntpd -d -n -q -N \
-			    -p 0.openwrt.pool.ntp.org \
-			    -p 1.openwrt.pool.ntp.org \
-			    -p 2.openwrt.pool.ntp.org \
-			    -p 3.openwrt.pool.ntp.org
-				cnt=$(($cnt+1))
-				if [ $cnt -gt 0 ];then
-					echo cnt
-					break
-				fi
-			NTPD_RET=$?
-		done
-
-		touch /tmp/cgminer-ntpd-done
-	fi
+	while [ "$cnt" != "3" -a "$NTPD_RET" != "0" ] ; do
+		ntpd -d -n -q -N \
+		    -p 0.openwrt.pool.ntp.org \
+		    -p 1.openwrt.pool.ntp.org \
+		    -p 2.openwrt.pool.ntp.org \
+		    -p 3.openwrt.pool.ntp.org &> /dev/null
+		NTPD_RET="$?"
+		cnt=$(($cnt+1))
+		sleep 1
+	done
+	echo $cnt
 	echo $PARAMS
 	start-stop-daemon -S -x $APP -p $PID_FILE -m -b -- $PARAMS
 }
